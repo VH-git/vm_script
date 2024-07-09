@@ -1,79 +1,95 @@
-# Function to display the main menu
-function Show-Menu {
-    Clear-Host
-    Write-Host "=== Virtual Machine Deployment ===" -ForegroundColor Green
-    Write-Host "1. Create a VM"
-    Write-Host "2. List the available VMs"
-    Write-Host "3. Start a VM"
-    Write-Host "4. Stop a VM"
-    Write-Host "5. List the settings of a particular VM"
-    Write-Host "6. Delete a VM"
-    Write-Host "7. End the program"
+#Victor Hermes
+#Virtulization
+
+
+# This displays the main menu
+function Show-Menu 
+{
+    Write-Host "     Virtual Machine Deployment"
+    Write-Host "  1. Create a VM"
+    Write-Host "  2. List the available VMs"
+    Write-Host "  3. Start a VM"
+    Write-Host "  4. Stop a VM"
+    Write-Host "  5. List the settings of a particular VM"
+    Write-Host "  6. Delete a VM"
+    Write-Host "  7. End the program"
 }
 
-# Function to create a new VM
-function Create-VM {
-    Clear-Host
-    $VMName = Read-Host "Enter the name of the new virtual machine"
-    $Memory = Read-Host "Enter the amount of memory for the virtual machine (in MB)"
-    $VHDPath = Read-Host "Enter the path to the VHD file for the virtual machine"
-    $SwitchName = Read-Host "Enter the name of the virtual switch for the virtual machine"
-    $NewVM = New-VM -Name $VMName -MemoryStartupBytes $Memory -Path $VHDPath -SwitchName $SwitchName
-    Write-Host "Virtual machine $VMName created successfully" -ForegroundColor Green
+# this create a new VM
+
+function CreateVM 
+{
+    $vmName = Read-Host "Enter the name for this new virtual machine"
+    $pathToVM = Read-Host "Enter the path for this vm (use \Users\Student\Downloads as default)"
+    
+    New-VM -Name $vmName -Path $pathToVM
+
+    Write-Host "VM Creation Successful" -ForegroundColor Green
 }
 
-# Function to list available VMs
-function List-VM {
-    Clear-Host
-    Get-VM | Select-Object Name
+# this lists all available VMs and a few other bits of data
+function ListVM 
+{
+    Get-VM | Out-Host
 }
 
-# Function to start a VM
-function Start-VM {
-    Clear-Host
-    $VMName = Read-Host "Enter the name of the virtual machine to start"
-    Start-VM -Name $VMName
-    Write-Host "Virtual machine $VMName started successfully" -ForegroundColor Green
+# this starts a VM
+function StartVM 
+{
+    $vmName = Read-Host "Enter the name of the virtual machine to start"
+    Start-VM -Name $vmName
+    Write-Host "Virtual machine $vmName started successfully" -ForegroundColor Green
 }
 
-# Function to stop a VM
-function Stop-VM {
-    Clear-Host
-    $VMName = Read-Host "Enter the name of the virtual machine to stop"
-    Stop-VM -Name $VMName
-    Write-Host "Virtual machine $VMName stopped successfully" -ForegroundColor Green
+# this stops a VM
+function StopVM 
+{    
+    $vmName = Read-Host "Enter the name of the virtual machine to stop"
+    Stop-VM -Name $vmName
+    Write-Host "Virtual machine $vmName stopped successfully" -ForegroundColor Green
 }
 
-# Function to list the settings of a particular VM
-function List-VMSettings {
-    Clear-Host
-    $VMName = Read-Host "Enter the name of the virtual machine to list the settings"
-    Get-VM -Name $VMName | Format-List *
+# this list the settings of a particular VM and lists a lot of other details
+function ListVMSettings 
+{    
+    $vmName = Read-Host "Enter the name of the virtual machine to list the settings"
+    Get-VM -Name $vmName | Format-List *
 }
 
 # Function to delete a VM
-function Remove-VM {
-    Clear-Host
-    $VMName = Read-Host "Enter the name of the virtual machine to delete"
-    Remove-VM -Name $VMName -Force
-    Write-Host "Virtual machine $VMName deleted successfully" -ForegroundColor Green
+function RemoveVM 
+{    
+    
+    $vmName = Read-Host "Enter the name of the virtual machine to delete"
+    #i stop the vm no matter what so an error isnt thrown
+    Stop-VM -Name $vmName
+    Remove-VM -Name $vmName -Force
+    Write-Host "Virtual machine $vmName deleted successfully" -ForegroundColor Green
+    
 }
 
-# Main script
-while ($true) {
+# Where the script starts
+while ($true)
+{
     Show-Menu
     $choice = Read-Host "Enter your choice"
-    switch ($choice) {
-        "1" { Create-VM }
-        "2" { List-VM }
-        "3" { Start-VM }
-        "4" { Stop-VM }
-        "5" { List-VMSettings }
-        "6" { Remove-VM }
-        "7" { 
-                Write-Host Executing exit command
-                exit
-            }
+    switch ($choice) 
+    {
+        "1" { CreateVM }
+        "2" { ListVM }
+        "3" { StartVM }
+        "4" { StopVM }
+        "5" { ListVMSettings }
+        "6" { RemoveVM }
+        "7" { Write-Host Executing exit command
+              exit}
         default { Write-Host "Invalid choice, please try again" -ForegroundColor Red }
     }
 }
+
+<# Here are the sites I used to help me.
+
+https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/get-started/create-a-virtual-machine-in-hyper-v?tabs=hyper-v-manager
+https://caiomsouza.medium.com/fix-for-powershell-script-not-digitally-signed-69f0ed518715
+
+#>
